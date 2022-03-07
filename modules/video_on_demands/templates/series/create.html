@@ -1,0 +1,185 @@
+{% extends 'layout/inner.html' %}
+{% load static fetch_user  %}
+{% block content %}
+{% comment %} For video Series {% endcomment %}
+<form class="content-page series-form" action="" method="POST">
+    {% csrf_token %}
+    {% include 'forms/form_errors.html' %}
+    {{form.created_by}}
+    <div class="page-head-one">
+        <h2>Add Video or Video Series</h2>
+        <div class="btn-btm-group top-page-btn">
+            <button type="button" class="border-btn discart_changes">Discard Changes</button>
+            <button type="submit" class="btn-pink ml-10 change-btn">Continue</button>
+        </div>
+    </div>
+    <div class="form-page">
+        <div class="taeb-switch taeb-switch1 text-center mb-5 {% if tab == 'video' %} left {% else %} right {% endif %} text-center">
+            <div class="taeb switch-video {% if tab == 'video' %} active {% endif %}" taeb-direction="left" data-value="false">Add Video</div>
+            <div class="taeb switch-video {% if tab == 'series' %} active {% endif %}" taeb-direction="right" data-value="true">Video Series</div>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Video Series Name[*]</label>
+                    <div class="form-field-input">
+                        {{form.name}}
+                        {{form.name.errors}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Language[*]</label>
+                    <div class="drop-down">
+                        {{form.language}}
+                        {{form.language.errors}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Applicable Subscription[*]</label>
+                    <div class="drop-down">
+                        {{form.subscription}}
+                        {{form.subscription.errors}}
+                        <a href="{% url 'video_subscription_add' %}" class="small">Add New Subscription [+]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--video-series  -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="content-block-one">
+                <h4 class="profile-setup-inner-block-heading">Upload Media</h4>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group form-field-main p-form-3 file-container">
+                            <div class="form-field-video ">
+                                <div class="video-uploadbox">
+                                    <div class="custom-file">
+                                        <input type="file" accept="image/png,image/jpeg,image/*" data-action="{% url 'upload-new-video' %}" data-content-type="image" data-content="Profile Image" class="file-upload custom-file-input">
+                                        <label class="custom-file-label placeholder text-truncate">Profile image[*]</label>
+                                    </div>
+                                </div>
+                                <div class="upload-box box-image">
+                                    <img src="{% static 'images/no-image.svg' %}">
+                                </div>
+                            </div>
+                            <input type="text" class="opacity-0 file-field" required name="profile_image_file" >
+                            <span class="pl-2 text-muted file_name"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group form-field-main p-form-3 file-container">
+                            <div class="form-field-video ">
+                                <div class="video-uploadbox">
+                                    <div class="custom-file">
+                                        <input type="file" accept="image/png,image/jpeg,image/*" data-action="{% url 'upload-new-video' %}" data-content-type="image" data-content="Tile Image" class="file-upload custom-file-input">
+                                        <label class="custom-file-label placeholder text-truncate">Tile Image[*]</label>
+                                    </div>
+                                </div>
+                                <div class="upload-box box-image">
+                                    <img src="{% static 'images/no-image.svg' %}">
+                                </div>
+                            </div>
+                            <input type="text" class="opacity-0 file-field" required name="tile_image_file" >
+                            <span class="pl-2 text-muted file_name"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group form-field-main p-form-3 file-container">
+                            <div class="form-field-video ">
+                                <div class="video-uploadbox">
+                                    <div class="custom-file">
+                                        <input type="file" accept="video/mp4,video/x-m4v,video/mov,video/avi,video/*" data-content-type="video" data-action="{% url 'upload-new-video' %}" data-content="Video Teaser" class="file-upload custom-file-input">
+                                        <label class="custom-file-label placeholder text-truncate">Video Teaser[*]</label>
+                                    </div>
+                                </div>
+                                <div class="upload-box box-video" >
+                                    <img src="{% static 'images/videoPreview.png' %}">
+                                </div>
+                            </div>
+                            <input type="text" class="opacity-0 file-field" required name="video_teaser_file" >
+                            <span class="pl-2 text-muted file_name"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-pd">
+        <div class="col-sm-12 vdo-6-one">
+            <div class="thumb-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">About the video series[*]</label>
+                    <div class="form-field-input textarea-dif-size">
+                        {{form.about_video}}
+                        {{form.about_video.errors}}
+                        <small>0 of 150 words</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</form>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    .limitskill{
+    color:red
+    }
+
+    .price_loc{
+        display: flex;
+        flex-flow: row-reverse;
+    }
+    .check_series{
+        opacity: 0;
+    }
+</style>
+
+<div class="loader" id="payloader" style=""><img src="{% static 'images/loading.gif' %}" alt=""></div>
+
+{% include "layout/successerror.html" %}
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.multidatespicker.js' %}"></script>
+<script src="{% static 'js/image_uploader.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.14/js/bootstrap-multiselect.min.js"></script>
+{% include "plugins.html" %}
+<script src="{% static 'js/custom.js' %}"></script>
+{% comment %} Extra plugins {% endcomment %}
+<script type="text/javascript">
+    $(window).on('load', function () {
+        $('#payloader').hide();
+      })
+    
+      $(document).ready(function() {
+        $(".series-form").validate({
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+
+        $(".taeb").on("click", function() {
+            var is_series = $(this).attr("data-value");
+            if(is_series !== 'true'){
+                location.href = "{% url 'video_series_add' %}"
+            }
+        });
+        $('.discart_changes').on('click', function(){
+            $('form').trigger("reset");
+            setTimeout(function(){
+                location.reload(true)
+            }, 300)
+        })
+    });
+
+</script>
+{% endblock content %}

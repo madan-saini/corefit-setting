@@ -1,0 +1,248 @@
+{% extends 'layout/inner.html' %}
+{% load static util_filter %}
+{% block content %}
+{% comment %} For videos {% endcomment %}
+<form class="content-page video-form" action="" method="POST" >
+    {% csrf_token %}
+    {% include 'forms/form_errors.html' %}
+    {% profile_image object as profileimg %}
+    {% tile_image object as tileimg %}
+    {% uploaded_video object as uploadvid %}
+    {% uploaded_teaser object as uploadteaser %}
+
+    <div class="page-head-one">
+        <h2>View and Update Video</h2>
+        <div class="btn-btm-group top-page-btn">
+            <button type="button" class="border-btn discart_changes">Discard Changes</button>
+            <button type="submit" class="btn-pink ml-10 change-btn">Update Video</button>
+        </div>
+    </div>
+    <div class="form-page">
+        <!--add-video-tab  -->
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Video Name[*]</label>
+                    <div class="form-field-input">
+                        {{form.name}}
+                        {{form.name.error}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Duration (in minutes)</label>
+                    <div class="form-field-input">
+                        <input type="text" name="" class="duration" placeholder="" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Language[*]</label>
+                    <div class="drop-down">
+                        {{form.language}}
+                        {{form.language.errors}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Applicable Subscription[*]</label>
+                    <div class="drop-down">
+                        {{form.subscription}}
+                        {{form.subscription.errors}}
+                        <a href="{% url 'video_subscription_add' %}" class="small">Add New Subscription [+]</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Workout Type[*]</label>
+                    <div class="drop-down">
+                        {{form.workout_type}}
+                        {{form.workout_type.errors}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Intensity[*]</label>
+                    <div class="drop-down">
+                        {{form.intensity}}
+                        {{form.intensity.errors}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-pd">
+        <div class="col-sm-6">
+            <div class="content-block-one p-0">
+                <h4 class="profile-setup-inner-block-heading">Upload Image</h4>
+                
+                <div class="form-group form-field-main file-container">
+                    <div class="form-field-video ">
+                        <div class="video-uploadbox">
+                            <div class="custom-file">
+                                <input type="file" accept="image/png,image/jpeg,image/*" data-action="{% url 'upload-new-video' %}" 
+                                data-content-type="image" data-content="Profile Image" class="file-upload custom-file-input">
+                                <label class="custom-file-label placeholder text-truncate">Profile image[*]</label>
+                            </div>
+                        </div>
+                        <div class="upload-box box-image">
+                            <img src="{{ profileimg.get_image }}">
+                        </div>
+                    </div>
+                    <input type="hidden" name="profile_image_file" class="file-field" value="{{ profileimg.id }}">
+                    <span class="pl-2 text-muted file_name">{{profileimg.get_filename}}</span>
+                </div>
+
+                <div class="form-group form-field-main file-container">
+                    <div class="form-field-video ">
+                        <div class="video-uploadbox">
+                            <div class="custom-file">
+                                <input type="file" accept="image/png,image/jpeg,image/*" data-action="{% url 'upload-new-video' %}" data-content-type="image" data-content="Tile Image" class="file-upload custom-file-input">
+                                <label class="custom-file-label placeholder text-truncate">Tile Image[*]</label>
+                            </div>
+                        </div>
+                        <div class="upload-box box-image">
+                            <img src="{{ tileimg.get_image }}">
+                        </div>
+                    </div>
+                    <input type="hidden" name="tile_image_file" class="file-field" value="{{tileimg.id}}">
+                    <span class="pl-2 text-muted file_name">{{tileimg.get_filename}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="content-block-one p-0">
+                <h4 class="profile-setup-inner-block-heading">Upload Video</h4>
+                <div class="form-group form-field-main file-container">
+                    <div class="form-field-video">
+                        <div class="video-uploadbox">
+                            <div class="custom-file">
+                                <input type="file" accept="video/mp4,video/x-m4v,video/mov,video/avi,video/*" data-duration="true" data-content-type="video" data-action="{% url 'upload-new-video' %}" data-content="Video" class="file-upload custom-file-input">
+                                <label class="custom-file-label placeholder text-truncate">Upload Video[*]</label>
+                            </div>
+                        </div>
+                        <div class="upload-box box-video" >
+                            <img src="{{ uploadvid.get_thumbnail }}">
+                        </div>
+                    </div>
+                    <input type="hidden" name="upload_video_file" class="file-field" value="{{ uploadvid.id }}">
+                    <span class="pl-2 text-muted file_name">{{ uploadvid.get_filename }}</span>
+                </div>
+                <div class="form-group form-field-main file-container">
+                    <div class="form-field-video">
+                        <div class="video-uploadbox">
+                            <div class="custom-file">
+                                <input type="file" accept="video/mp4,video/x-m4v,video/mov,video/avi,video/*" data-content-type="video" data-action="{% url 'upload-new-video' %}" data-content="Video Teaser" class="file-upload custom-file-input">
+                                <label class="custom-file-label placeholder text-truncate">Video Teaser[*]</label>
+                            </div>
+                        </div>
+                        <div class="upload-box box-video" >
+                            <img src="{{ uploadteaser.get_thumbnail }}">
+                        </div>
+                    </div>
+                    <input type="hidden" name="video_teaser_file" class="file-field" value="{{ uploadteaser.id }}">
+                    <span class="pl-2 text-muted file_name">{{ uploadteaser.get_filename }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-pd">
+        <div class="col-sm-6 vdo-6-one">
+            <div class="thumb-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Skill Level[*]</label>
+                    <div class="drop-down drop-after">
+                        {{form.skill_level}}
+                        {{form.skill_level.errors}}
+                    </div>
+                </div>
+                <div class="form-group form-field-main">
+                    <label class="label-field">Equipment Required[*]</label>
+                    <div class="drop-down drop-after">
+                        {{form.required_equipments}}
+                        {{form.required_equipments.errors}}
+                    </div>
+                </div>
+                <div class="form-group form-field-main">
+                    <label class="label-field">Body Focus[*]</label>
+                    <div class="drop-down drop-after">
+                        {{form.body_focus}}
+                        {{form.body_focus.errors}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 vdo-6-one">
+            <div class="thumb-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">About workout or video[*]</label>
+                    <div class="form-field-input textarea-dif-size">
+                        {{form.about_video}}
+                        {{form.about_video.errors}}
+                        <small>0 of 150 words</small>
+                    </div>
+                </div>
+                <div class="form-group form-field-main">
+                    <label class="label-field">Additonal Info</label>
+                    <div class="form-field-input textarea-dif-size">
+                        {{form.additional_info}}
+                        {{form.additional_info.errors}}
+                        <small>0 of 150 words</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</form>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    .limitskill{
+    color:red
+    }
+    .price_loc{
+        display: flex;
+        flex-flow: row-reverse;
+    }
+</style>
+
+<div class="loader" id="payloader" style=""><img src="{% static 'images/loading.gif' %}" alt=""></div>
+
+{% include "layout/successerror.html" %}
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.multidatespicker.js' %}"></script>
+<script src="{% static 'js/image_uploader.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.14/js/bootstrap-multiselect.min.js"></script>
+{% include "plugins.html" %}
+<script src="{% static 'js/custom.js' %}"></script>
+{% comment %} Extra plugins {% endcomment %}
+<script type="text/javascript">
+    $(window).on('load', function () {
+        $('#payloader').hide();
+      })
+    
+      $(document).ready(function() {
+
+        $(".video-form").validate({
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+        $('.discart_changes').on('click', function(){
+            $('form').trigger("reset");
+            setTimeout(function(){
+                location.reload(true)
+            }, 300)
+        })
+    });
+
+</script>
+{% endblock content %}

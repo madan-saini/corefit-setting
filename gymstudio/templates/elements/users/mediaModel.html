@@ -1,0 +1,224 @@
+{% load static %} {% load fetch_user %}
+
+{% check_ext mediaSoci.data as ext %}
+<div class="modal form-popup fade" data-backdrop="static" id="modalShowMedia" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content upload-img-pop new-offer-pop disable-text-field">
+
+            <form name="mediaSocialMediaEdit"
+                id="mediaSocialMediaEdit{{mediaSoci.id}}"
+                
+                method="POST"
+                enctype="multipart/form-data"
+          >
+          {% csrf_token %}
+            <div class="row">
+
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Media Title</label>
+                        <div class="form-field-input">
+                            <input type="text" class="disabledField required" name="media_title" placeholder="" disabled value="{{mediaSoci.mediaTitle}}">
+                        </div>
+                    </div>
+                </div>
+
+               <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Media Upload</label>
+                        <div class="form-field-video">
+                            <div class="video-uploadbox" >
+                                <div class="custom-file media_edit_img" style="display: none;">
+                                    <input type="file" id="edit_media_media" name="edit_media_media" accept="video/mp4,video/x-m4v,video/mov,video/avi,video/,image/*" class="custom-file-input disabledField">
+                                    <label for="edit_award_document" class="custom-file-label placeholder text-truncate">Media Upload</label>
+                                    <input
+                                    multiple
+                                    type="hidden"
+                                    name="myMediaold"
+                                    value="{{mediaSoci.data}}"
+                                  />
+                                </div>
+                                <div class="custom-file media_view_img">
+                                    <label class="custom-file-label placeholder text-truncate">Media Upload</label>
+                                </div>
+                                {% comment %} <div class="custom-file">
+                                    <input class="disabledField" type="file" style="display: none;" id="media_socialmedia_edit_" name="award_document" accept="video/mp4,video/x-m4v,video/mov,video/avi,video/,image/*" fullwidth="" formcontrolname="video" class="custom-file-input required">
+                                    <label for="video" class="custom-file-labell placeholder text-truncate">Media Upload</label>
+                                </div> {% endcomment %}
+                            </div>
+                            {% if ext == ".mp4" %}
+                                <div
+                                    class="upload-box "
+                                    id="media_upload_show_id"
+                                    onclick="openVideoPopM('media_upload_shows_{{mediaSoci.id}}')"
+                                >
+                                    <img
+                                    id="media_upload_shows_{{mediaSoci.id}}"
+                                    src="{% static 'images/videoPreview.png' %}"
+                                    data="{% static MEDIA_URL%}{{mediaSoci.data}}"
+                                    />
+                                </div>
+                            {% else %}
+                                <div
+                                id="media_upload_show_id"
+                                    class="upload-box " onclick="mediaView('{{mediaSoci.id}}','{% static MEDIA_URL %}{{mediaSoci.data}}')"
+                                >
+                                    <img
+                                    id="media_upload_shows_{{mediaSoci.id}}"
+                                    src="{% static MEDIA_URL%}{{mediaSoci.data}}"
+                                    data="{% static MEDIA_URL%}{{mediaSoci.data}}"
+                                    />
+                                </div>
+                            {% endif %}
+                            {% comment %} <div class="upload-box" data-toggle="modal" data-target="#exampleModalCenter">
+                                <img src="{% static 'images/no-image.svg' %}">
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="action-box  btn-form acpt-rjt-btn action-one">
+                        <div id="view_btn_media{{mediaSoci.id}}" class="view_btn_media">
+                            <button class="border-btn-small" type="button" onclick="editMedia('{{mediaSoci.id}}')">Edit</button>
+                            <button class="btn-red-one" type="button"  onclick="deleteMedia('{{mediaSoci.id}}')">Delete</button>
+                        </div>
+
+                        <div id="edit_btn_media{{mediaSoci.id}}" class="edit_btn_media" style="display: none;">
+                            <button class="border-btn" type='button' onclick="closeMedia('{{mediaSoci.id}}')">Discard changes</button>
+                            <button  class="btn-pink ml-10" onclick="mediaEdit({{mediaSoci.id}})">Save changes</button>
+                        </div>
+
+
+                        {% comment %} <div >
+                            <button class="border-btn-small" onclick="editMedia()">Edit</button>
+                            <button class="btn-red-one">Delete</button>
+                        </div> {% endcomment %}
+
+                    </div>
+                </div>
+
+            </div>
+          </form>
+            <button type="button" class="close-btn-pop" data-dismiss="modal"><img src="{% static 'images/material-cancel.svg'%}"></button>
+        </div>
+
+    </div>
+</div>
+<script>
+  function openVideoPopM(id) {
+        var data = $("#" + id).attr("data");
+        let vid = "{% static MEDIA_URL%}{{mediaSoci.data}}"
+        if (data != "") {
+          var video = document.getElementById("video_bx");
+          $("#videoModalCenter").modal("show");
+          $("#video_bx source").attr("src", data);
+          video.load();
+          video.play();
+        }
+      }
+    function mediaViewEdit(id, img){
+        $("#myMedia").val('');
+        $('#imageModalCenter').modal('show');
+        $('#image_dv img').attr('src',img)
+    
+        }
+    function readFile4(input) {
+        var reader = new FileReader();
+        reader.onload = function ()
+        {
+            $('#media_upload_shows_'+{{mediaSoci.id}}).attr("src", reader.result);
+            $('#media_upload_shows_'+{{mediaSoci.id}}).attr("data", reader.result);
+            $('#media_upload_show_id').attr("onclick", "mediaViewEdit('0','"+reader.result+"')");
+            
+          // output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+    function in_array2(needle, haystack) {
+        for (var i = 0, j = haystack.length; i < j; i++) {
+          if (needle == haystack[i]) return true;
+        }
+        return false;
+      }
+      function getExt2(filename) {
+        var dot_pos = filename.lastIndexOf(".");
+        if (dot_pos == -1) return "";
+        return filename.substr(dot_pos + 1).toLowerCase();
+      }
+      function imageValidation2(imageId, event) {
+        var filename = document.getElementById(imageId).value;
+        var filetype = ["jpg", "jpeg", "png"];
+        if (filename != "") {
+          var ext = getExt(filename);
+          ext = ext.toLowerCase();
+          var checktype = in_array(ext, filetype);
+          if (!checktype) {
+            alert(ext + " file not allowed.");
+            document.getElementById(imageId).value = "";
+            return false;
+          } else {
+            var fi = document.getElementById(imageId);
+            var filesize = fi.files[0].size; //check uploaded file size
+            if (filesize > 52428800) {
+              alert("Maximum 50MB file size allowed.");
+              document.getElementById(imageId).value = "";
+              return false;
+            }
+          }
+    
+          readFile4(event);
+        }
+      }
+    
+      function videoValidation2(imageId, event) {
+        var filename = document.getElementById(imageId).value;
+        var filetype = ["mp4"];
+        if (filename != "") {
+          var ext = getExt(filename);
+          ext = ext.toLowerCase();
+          var checktype = in_array(ext, filetype);
+          if (!checktype) {
+            alert(ext + " file not allowed.");
+            document.getElementById(imageId).value = "";
+            return false;
+          } else {
+            var fi = document.getElementById(imageId);
+            var filesize = fi.files[0].size; //check uploaded file size
+            if (filesize > 52428800) {
+              alert("Maximum 50MB file size allowed.");
+              document.getElementById(imageId).value = "";
+              return false;
+            }
+          }
+
+          $('#media_upload_shows_'+{{mediaSoci.id}}).attr("src", 'static/images/videoPreview.png');
+          $('#media_upload_show_id').attr("onclick", "");
+          swal('',"Video can be previewed after saving details.");
+        }
+      }
+$("#edit_media_media").change(function (e) {
+    var filenameType = $("#edit_media_media").val();
+    var extn = getExt2(filenameType);
+    extn = extn.toLowerCase();
+    var imagefiletype = ["jpg", "jpeg", "png", "gif", "svg"];
+    var videofiletype = ["mp4"];
+    var checktypeextnImage = in_array2(extn, imagefiletype);
+    var checktypeextnVideo = in_array2(extn, videofiletype);
+    if (checktypeextnImage) {
+      if (imageValidation2("edit_media_media", this) != false) {
+      }
+    }
+    if (checktypeextnVideo) {
+      if (videoValidation2("edit_media_media", this) != false) {
+      }
+    }
+    if (!checktypeextnVideo && !checktypeextnImage) {
+      alert(ext + " file not allowed.");
+      document.getElementById("edit_media_media").value = "";
+      return false;
+    }
+    
+    
+  });
+</script>

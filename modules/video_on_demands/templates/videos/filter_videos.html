@@ -1,0 +1,30 @@
+<div class="pop-schedule filter-pop" style="display: none;">
+    <h4>Filter</h4>
+    <form method="GET">
+        <div class="form-group form-field-main">
+            <label class="label-field">Filter By Video Type:</label>
+            <div class="drop-down drop-after">
+                <select name="vtype" class="form-control">
+                    <option value="series" {% if request.GET.vtype == 'series'%} selected {% endif %}>Video Series </option> 
+                    <option value="video" {% if request.GET.vtype == 'video'%} selected {% endif %}>Single Video </option>                                                    
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group form-field-main">
+            <label class="label-field">Subscription:</label>
+            <div class="drop-down drop-after">
+                <select name="subscription" class="form-control">
+                    {% for subsc in subscriptions %}
+                        <option value="{{subsc.id}}">{{subsc.name}}</option>                                                    
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="btn-btm-group">
+            <button class="border-btn" type='button' onclick="closeSPop()">Discard</button> 
+            <button type="submit" class="btn-pink ml-10">Submit</button>
+        </div>
+    </form>
+</div>
+

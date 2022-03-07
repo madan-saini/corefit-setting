@@ -1,0 +1,214 @@
+{% extends 'layout/inner.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="content-page">
+    <div class="page-head-one">
+        <h2>Video Managements</h2>
+    </div>
+    <div class="pro-set-top-bar"><span>Add CoreFit Video On Demand</span>
+        <div class="btn-group"><a href="{% url 'video_series_add' %}" class="btn-gray-one">Add Video and Series</a></div>
+    </div>
+
+    <div class="sort-table-block">
+        <div class="search-table d-flex">
+            <form class="search-box-table" action="">
+                <input type="text" name="search" placeholder="Search...">
+                <img src="{% static 'images/search-icon.svg' %}">
+            </form>
+            <div class="search-actions-rt">
+                <a href="#" class="btn-green-border filter-click">
+                    <img src="{% static 'images/filter.svg' %}">Filters
+                </a>
+                {% include 'videos/filter_videos.html' %}
+               <a href="#" class="btn-green-border choose-date-pik"> 
+                   <img src="{% static 'images/noun_Calendar_1611923.svg' %}"> Choose dates 
+                </a>
+            </div>
+        </div>
+        <div class="table-box table-full">
+            <table class="table table-bordered table-stip table-cs">
+                <thead>
+                    <tr>
+                        {% include 'tables/sorted_column.html' %}
+                        {% comment %} <th scope="col">Subscription</th> {% endcomment %}
+                        <th scope="col">Visible to User</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for video in page_obj %}
+                        <tr>
+                            <td>{{video.name}}</td>
+                            <td>
+                                {% if video.is_series%}
+                                    Video Series
+                                {% else %}
+                                    Single Video
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if video.subscription %}
+                                    <a href="{% url 'video_subscription_update' video.subscription.id %}">{{video.subscription}}</a>
+                                {% endif %}
+                            </td>
+                            <td>{{video.created_at|date:'d/m/Y'}}</td>
+                            <td>
+                                <div class="can-toggle">
+                                    {% if video.visible_to_user %}
+                                        <input class="visible_to_user" data-id="{{video.id}}" id="b-{{video.id}}" type="checkbox" >
+                                    {% else %}
+                                        
+                                        <input class="visible_to_user" data-id="{{video.id}}" id="b-{{video.id}}" type="checkbox" checked>
+                                    {% endif %}
+                                    <label for="b-{{video.id}}">
+                                        <div class="can-toggle__switch" data-checked="No" data-unchecked="Yes"></div>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-box">
+                                    {% if not video.is_series %}
+                                        <a href="{% url 'video_update' video.id %}" class="border-btn-small">View </a>
+                                    {% else %}
+                                        <a href="{% url 'video_series_update' video.id %}" class="border-btn-small">View </a>
+                                    {% endif %}
+                                    <a href="javascript:void(0);" class="btn-red-one delete-video" data-href="{% url 'video_delete' video.id %}">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% comment %} Paginations {% endcomment %}
+            {% include 'tables/paginations.html' %}
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    .limitskill{
+    color:red
+    }
+    .pop-schedule {
+        width: 439px;
+        right: 0em;
+        top: 35%;
+    }
+</style>
+
+<div class="loader" id="payloader" style=""><img src="{% static 'images/loading.gif' %}" alt=""></div>
+<link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.css' %}">
+{% include "layout/successerror.html" %}
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.multidatespicker.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<script>
+    function closeSPop() {
+        $('.filter-pop').hide();
+    }
+    $(window).on('load', function () {
+        $('#payloader').hide();
+      })
+    $(document).ready(function(){
+
+        $('.delete-video').on('click', function(){
+            var urlpath = $(this).attr('data-href');
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this media file!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+              })
+              .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "GET",
+                        url: urlpath,
+                        beforeSend: function (xhr) {
+                          $("#payloader").show();
+                        },
+                        success: function (response) {
+                            console.log(response)
+                            location.reload(true);
+                            $("#payloader").hide();
+                        },
+                        error: function (response) {
+                          $("#payloader").hide();
+                        },
+                      });
+                }
+              });
+        })
+    
+        $('.visible_to_user').on('click', function(){
+            var visible = 'no';
+            var vidid = $(this).attr('data-id');
+            if($(this).is(':checked')){
+            visible = 'yes';
+            }
+            console.log(visible)
+            $.ajax({
+                type: 'GET',
+                url: '/video-on-demand/'+vidid+"/update/"+visible,
+                success: function (response) {
+                    console.log(response);
+                }
+            });
+        })
+        $(".filter-click").click(function () {
+            $(".filter-pop").toggle();
+        });
+        
+        $(document).mouseup(function(e) 
+        {
+            var container = $(".filter-pop");
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0) 
+            {
+                container.hide();
+            }
+        });
+        {% if request.GET.startDate and request.GET.endDate %}
+        $('.choose-date-pik').daterangepicker({
+            autoUpdateInput: false,
+            opens: 'left',
+            startDate: moment("{{ request.GET.startDate }}").startOf('hour'),
+            endDate: moment('{{ request.GET.endDate }}').startOf('hour'),
+            locale: {
+                cancelLabel: 'Clear'
+            }
+
+        },function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            location.href = "{% url 'video_manage_list' %}?startDate="+start.format('YYYY-MM-DD')+"&endDate="+end.format('YYYY-MM-DD');
+        });
+        {% else %}
+            $('.choose-date-pik').daterangepicker({
+                autoUpdateInput: false,
+                opens: 'left',
+                startDate: moment().startOf('hour'),
+                endDate: moment().startOf('hour').add(32, 'hour'),
+                locale: {
+                    cancelLabel: 'Clear'
+                }
+
+            },function(start, end, label) {
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                location.href = "{% url 'video_manage_list' %}?startDate="+start.format('YYYY-MM-DD')+"&endDate="+end.format('YYYY-MM-DD');
+            });
+        {% endif %}
+    })
+</script>
+{% endblock content %}

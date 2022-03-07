@@ -1,0 +1,63 @@
+{% load static %}
+{% load fetch_user %}
+
+{% if records %}
+<table class="table table-bordered table-stip table-cs">
+    <thead>
+        <tr>
+            <th scope="col" width="16.66%">Name</th>
+            <th scope="col" width="16.66%">Location</th>
+            <!--<th scope="col" width="16.66%">Request Subject</th>-->
+            <th scope="col" width="16.66%">Request <br> Status</th>
+            <th scope="col" width="16.66%">Request <br> Date</th>
+            <th scope="col" width="16.66%">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in records%}
+        {% get_basic_data record.gym_user.id as basic_data %}
+        <tr>
+            <td>{{basic_data.brand.brand_name}}</td>
+            <td>
+                {{basic_data.location}}
+            </td>
+            <!--<td>{{record.type}}</td>-->
+            <td>
+                {% if record.status == 2%} 
+                    <span class='ref-btn'>Rejected</span>
+                {% elif record.status == 1%} 
+                    <span class='coll-btn'>Approved</span>
+                {% elif record.status == 3%} 
+                    <span class='can-btn'>Cancelled</span>
+                {%else%} 
+                    <span class='pen-btn'>Pending</span>
+                {%endif%}
+            </td>
+            <td>{% convert_date record.created_at as date_val %}
+                {{date_val}}</td>
+            <th>
+                <div class="action-box">
+                    <a href="javascript:void();" onclick="viewPopup('{{record.id}}');" class="border-btn-small">View</a>
+                    <div class="dropdown drop-more ml-3">
+                        <button class="more-btn dropdown-toggle ml-0" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            More
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Message</a>
+                            {% if record.status == 0%}
+                            <a class="dropdown-item" href="javascript:void();" onclick="requestStatus('{{record.id}}','Accept')">Accept</a>
+                            <a class="dropdown-item" href="javascript:void();" onclick="requestStatus('{{record.id}}','Reject')">Reject</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </th>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endif%}
+

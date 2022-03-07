@@ -1,0 +1,162 @@
+{% extends 'layout/inner.html' %}
+{% load static fetch_user  %}
+{% block content %}
+<form class="content-page" id="newvidsubform" action="" method="POST">
+    {% csrf_token %}
+    {% include 'forms/form_errors.html' %}
+    <div class="page-head-one">
+        <h2>Update Video Subscription</h2>
+        <div class="btn-btm-group top-page-btn">
+            <button type="button" class="border-btn discart_changes">Discard Changes</button>
+            <button type="button" class="btn-pink ml-10 submit-form">Update</button>
+        </div>
+    </div>
+    <div class="form-page">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Subscription name[*]</label>
+                    <div class="form-field-input">
+                        {{ form.name }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Price[*]</label>
+                    <div class="flex-input">
+                        <div class="price_loc form-field-input">
+                            {{form.price}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Subscription period[*]</label>
+                    <div class="form-field-input">
+                        <div class="swith-overlay">
+                            {{form.period_value}}
+                            {{form.period}}
+                            <div class="taeb-switch taeb-switch1 {% if object.period == 'days' %} left {% else %} right {% endif %} text-center">
+                                <div class="taeb{% if object.period == 'days' %} active {% endif %}" taeb-direction="left">Days</div>
+                                <div class="taeb{% if object.period == 'months' %} active {% endif %}" taeb-direction="right">Months</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Subscription includes[*]</label>
+                    <div class="drop-down drop-after">
+                        {{form.includes}}
+                        <span class="text-muted small">Type and press enter</span>
+                    </div>
+                </div>
+            </div>
+            {% comment %} <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">No. Of videos[*]</label>
+                    <div class="form-field-input">
+                        {{form.total_videos}}
+                    </div>
+                </div>
+            </div> {% endcomment %}
+            <div class="col-sm-6">
+                <div class="form-group form-field-main">
+                    <label class="label-field">Description</label>
+                    <div class="form-field-input">
+                        {{form.description}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>   
+</form>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    .limitskill{
+    color:red
+    }
+
+    .price_loc{
+        display: flex;
+    }
+    .price_loc input {
+        order: 2;
+    }
+    .price_loc select {
+        order: 1;
+    }
+    .price_loc .error{
+        order: 3;
+    }
+    #id_includes{
+        opacity: 0;
+    }
+    .form-group label.error {
+        position: absolute;
+        z-index: 9999;
+        top: 100%;
+    }
+</style>
+
+<div class="loader" id="payloader" style=""><img src="{% static 'images/loading.gif' %}" alt=""></div>
+
+{% include "layout/successerror.html" %}
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.multidatespicker.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'plugin/input-tags/input-tags.css' %}">
+<script src="{% static 'plugin/input-tags/input-tags.js' %}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.14/js/bootstrap-multiselect.min.js"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+<script>
+    $(window).on('load', function () {
+        $('#payloader').hide();
+      })
+    
+      $(document).ready(function() {
+
+        var multipleCancelButton = new Choices('#choices-multiple-remove-button', {
+            removeItemButton: true,
+            maxItemCount: 3,
+            searchResultLimit: 5,
+            renderChoiceLimit: 5
+        });
+
+        $('.multiple-checkboxes').multiselect({
+            includeSelectAllOption: true,
+            nonSelectedText: "Select",
+        });
+        $('#id_includes').inputTags();
+        $("#newvidsubform").validate({
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+        $('.submit-form').click(function(){
+            $("#newvidsubform").trigger('submit');
+        })
+        $('.taeb-switch >.taeb').on('click', function(){
+            var side = $(this).attr('taeb-direction');
+            if(side == 'left'){
+                $('#id_period').val('days');
+            }else{
+                $('#id_period').val('months');
+            }
+        })
+
+        $('.discart_changes').on('click', function(){
+            $('form').trigger("reset");
+            setTimeout(function(){
+                location.reload(true)
+            }, 300)
+        })
+    });
+</script>
+{% endblock content %}

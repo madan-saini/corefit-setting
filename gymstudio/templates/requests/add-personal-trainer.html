@@ -1,0 +1,310 @@
+{% extends 'layout/inner.html' %} 
+{% load static fetch_user %}
+
+{% block content %}
+
+<div class="loader" id="payloader" style="display: none;"><img src="{% static 'images/loading.gif' %}" alt=""></div>
+
+{% include "layout/successerror.html" %}
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<script>
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-bottom-center",
+        "preventDuplicates": true,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "1000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+</script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.css' %}">
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.14/js/bootstrap-multiselect.min.js"></script> 
+
+<div class="content-page">
+    <div class="page-head-one ">
+        <h2>Add Personal Trainer</h2>
+    </div>
+    <div class="add-traine-search">
+        <form class="" name='searchForm' id='searchForm' method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group form-field-main  p-0 mb-0">
+                <label class="label-field">Search for Personal Trainer by Name or User ID</label>
+                <div class="form-field-input mb-3">
+                    <input type="text" name="search_name" id="search_name" placeholder="Name or User ID" autocomplete="off">
+                </div>
+                <div class="text-right">
+                    <button class="green-border-btn apply-btn">Apply</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <form class="" name='addForm' id='addForm' method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="table-box table-full mt-3 tb-box mb-3" id="trainer_table" style="display: none;">
+            <!--{% include 'elements/employee-request/trainer-table.html' %}-->
+        </div>
+        <div class="btn-btm-group bg-border" style="display: none;" id="btn_section">
+            <button class="border-btn" type="button" onclick="clearForm();">Discard </button> <button class="btn-pink ml-10 ad-she-btn"> Add to Database
+            </button>
+            <div class="pop-schedule ad-gym-pop" style="display: none;">
+                <p>Do you want the Trainer profile to be completed by the employee, or by the gym?</p>
+                <div class="btn-btm-group btn-center">
+                    <button class="border-btn">Trainer</button> <button class="btn-pink ml-10">Gym</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    
+    function clearForm(){
+        $('#trainer_table').hide();
+        $('#btn_section').hide();
+        $('#search_name').val('');        
+    }
+
+    $("#searchForm").validate({
+
+        submitHandler: function (form) {
+            var token = $("[name=csrfmiddlewaretoken]").val();
+            var str = $('#search_name').val();
+            
+            if(str != ''){
+                $.ajax({
+                    type: 'POST',
+                    url: 'searchTrainer',
+                    data: {'name': str, csrfmiddlewaretoken: token},
+    //                data: {'serializedData': serializedData, csrfmiddlewaretoken: token},
+                    beforeSend: function () {
+                        $('#payloader').show();
+                    },
+                    success: function (response) {
+                        $('#payloader').hide();
+                        $('#trainer_table').show();
+                        $('#trainer_table').html(response);
+                    },
+                    error: function (response) {
+                        $('#payloader').hide();
+                        console.log('error', response)
+                    }
+                })
+            }
+
+            return false;
+        }
+    });
+
+    $("#addForm").validate({
+
+        submitHandler: function (form) {
+            var token = $("[name=csrfmiddlewaretoken]").val();
+            var form = document.querySelector('#addForm');
+
+            var formData = new FormData(form);
+
+            formData.append('csrfmiddlewaretoken', token);
+            
+            if($('input[name=selected_record]').is(":checked")){
+                $.ajax({
+                    type: 'POST',
+                    url: 'addTrainer',
+                    contentType: false,
+                    data: formData,
+                    processData: false,
+    //                data: {'serializedData': serializedData, csrfmiddlewaretoken: token},
+                    beforeSend: function () {
+                        $('#payloader').show();
+                    },
+                    success: function (response) {
+                        $('#payloader').hide();
+                        swal('',"Invite request send successfully to employee",'success');
+                    },
+                    error: function (response) {
+                        $('#payloader').hide();
+                        console.log('error', response)
+                    }
+                })
+            } else{
+                swal('',"Please select atleast one employee",'error');
+            }
+
+            return false;
+        }
+    });
+
+    $(document).mouseup(function (e) {
+        var container = $(".filter-pop");
+        // if the target of the click isn't the container nor a descendant of the container
+        if (!container.is(e.target) && container.has(e.target).length === 0)
+        {
+            container.hide();
+        }
+    });
+    $(".filter-click").click(function () {
+        $(".filter-pop").toggle();
+    });
+
+    function closeSPop() {
+        $('.filter-pop').hide();
+    }
+
+    $(function () {
+
+        $('#search').on('keyup', function () {
+//            var str = $(this).val();
+            var token = $("[name=csrfmiddlewaretoken]").val();
+
+            var form = document.querySelector('#searchForm');
+
+            var formData = new FormData(form);
+
+            formData.append('csrfmiddlewaretoken', token);
+
+            $.ajax({
+                type: 'POST',
+                url: 'searchRequest',
+//                data: {'name': str, csrfmiddlewaretoken: token},
+                contentType: false,
+                data: formData,
+                processData: false,
+                beforeSend: function () {
+                    $('#payloader').show();
+                },
+                success: function (response) {
+                    $('#payloader').hide();
+                    $('#table_request').html(response);
+                },
+                error: function (response) {
+                    $('#payloader').hide();
+                }
+            })
+        });
+    });
+
+    function viewPopup(id) {
+        var token = $("[name=csrfmiddlewaretoken]").val();
+
+        $.ajax({
+            type: 'POST',
+            url: 'viewRequest',
+            data: {'id': id, csrfmiddlewaretoken: token},
+            beforeSend: function () {
+                $('#payloader').show();
+            },
+            success: function (response) {
+                $('#payloader').hide();
+                $('#view_popup').html(response);
+                $('#view-request').modal('show');
+            },
+            error: function (response) {
+                $('#payloader').hide();
+                console.log('error', response)
+            }
+        });
+    }
+
+    function requestStatus(id, type) {
+
+        swal({
+            title: "Are you sure?",
+            text: "You want to change status of this record!",
+            icon: "warning",
+            buttons: [
+                'No',
+                'Yes'
+            ],
+            dangerMode: true,
+        }).then(function (isConfirm) {
+            if (isConfirm) {
+                var token = $("[name=csrfmiddlewaretoken]").val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'changeRequestStatus',
+                    data: {'id': id, 'type': type, csrfmiddlewaretoken: token},
+                    beforeSend: function () {
+                        $('#payloader').show();
+                    },
+                    success: function (response) {
+                        $('#payloader').hide();
+                        $('#view-request').modal('hide');
+                        swal("Request status changed successfully", "", "success");
+                        $('#table_request').html(response)
+                    },
+                    error: function (response) {
+                        $('#payloader').hide();
+                        console.log('error', response)
+                    }
+                });
+            }
+        });
+    }
+
+    $(function () {
+        $('.multiple-checkboxes').multiselect({
+            includeSelectAllOption: true,
+            nonSelectedText: "Select Multiple",
+            enableFiltering: true,
+            maxHeight: 250,
+            enableCaseInsensitiveFiltering: true,
+        });
+
+        $('.date-pik').daterangepicker({
+//            autoUpdateInput: false,
+            opens: 'left',
+            minDate: new Date(),
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'DD/MM/YYYY'
+            }
+
+        });
+
+        $('.date-pik').on('showCalendar.daterangepicker', function (ev, picker) {
+
+            $('.prev span').html('<img src="static/images/left-cal-arrow.svg">');
+            $('.next span').html('<img src="static/images/rt-cal-arrow.svg">');
+        });
+        $('.drp-buttons').html(' <div class="radio-box"><div class="check"></div></div> <button class="applyBtn btn btn-sm btn-primary" type="button">Apply</button>');
+        $('.drp-buttons').addClass('cal-btns');
+        $('.date-pik').on('apply.daterangepicker', function (ev, picker) {
+            $('input[name="datefilter"]').val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+
+            var startDate = picker.startDate.format('YYYY-MM-DD');
+            var endDate = picker.endDate.format('YYYY-MM-DD');
+
+            $('#search_start_date').val(startDate);
+            $('#search_end_date').val(endDate);
+
+            $('.prev span').html('<img src="static/images/left-cal-arrow.svg">');
+            $('.next span').html('<img src="static/images/rt-cal-arrow.svg">');
+
+            $('#searchEvent').submit();
+        });
+
+        $('.date-pik').on('cancel.daterangepicker', function (ev, picker) {
+            $('input[name="datefilter"]').val('');
+        });
+    });
+</script>
+{% endblock content %}

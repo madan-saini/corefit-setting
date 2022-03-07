@@ -1,0 +1,233 @@
+{% extends 'layout/inner.html' %}
+{% load static fetch_user  %}
+{% block content %}
+{% comment %} For videos {% endcomment %}
+<form class="content-page" id="episode_form" action="" method="POST">
+    {% csrf_token %}
+    {{form.series}}
+    {% include 'forms/form_errors.html' %}
+        <div class="page-head-one">
+            <h2>Video {{next_episodes}} of 1 for ({{video.name}})</h2>
+            <div class="btn-btm-group top-page-btn">
+                <button type="button" class="border-btn discart_changes">Discard Changes</button>
+                <button type="submit" class="btn-pink ml-10 change-btn">Save & Submit Video Series</button>
+            </div>
+            <input type="hidden" name="save_as" id="id_save_as" value="final">
+        </div>
+        <div class="form-page">
+            <!--add-video-tab  -->
+            <div class="row">
+                <div class="col-sm-12">
+                      <div class="form-group form-field-main">
+                       <a href="javascript:void(0)" class="btn-green-border" id="save_as_draft">Save & Add another Video to Series</a>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Video Episode Name[*]</label>
+                        <div class="form-field-input">
+                            {{form.name}}
+                            {{form.name.error}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Duration</label>
+                        <div class="form-field-input">
+                            <input type="text" name="" placeholder="" class="duration" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Skill Level[*]</label>
+                        <div class="drop-down drop-after">
+                            {{form.skill_level}}
+                            {{form.skill_level.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Intensity[*]</label>
+                        <div class="drop-down">
+                            {{form.intensity}}
+                            {{form.intensity.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Equipment Required[*]</label>
+                        <div class="drop-down drop-after">
+                            {{form.required_equipments}}
+                            {{form.required_equipments.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Workout Type[*]</label>
+                        <div class="drop-down">
+                            {{form.workout_type}}
+                            {{form.workout_type.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                          <div class="form-group form-field-main">
+                        <label class="label-field">Body Focus[*]</label>
+                        <div class="drop-down drop-after">
+                            {{form.body_focus}}
+                            {{form.body_focus.errors}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-pd video-one">
+            <div class="col-sm-6">
+                <div class="content-block-one p-0">
+                    <h4 class="profile-setup-inner-block-heading">Upload Image</h4>
+                    <div class="form-group form-field-main file-container">
+                        <div class="form-field-video ">
+                            <div class="video-uploadbox">
+                                <div class="custom-file">
+                                    <input type="file" accept="image/png,image/jpeg,image/*" data-action="{% url 'upload-episode-media' %}" data-content-type="image" data-content="Profile Image" class="file-upload custom-file-input">
+                                    <label class="custom-file-label placeholder text-truncate">Profile image[*]</label>
+                                </div>
+                            </div>
+                            <div class="upload-box  box-image">
+                                <img src="{% static 'images/no-image.svg' %}">
+                            </div>
+                        </div>
+                        <input type="text" class="opacity-0 file-field" name="profile_image_file" required>
+                        <span class="pl-2 text-muted file_name"></span>
+                    </div>
+                    <div class="form-group form-field-main file-container">
+                        <div class="form-field-video ">
+                            <div class="video-uploadbox">
+                                <div class="custom-file">
+                                    <input type="file" accept="image/png,image/jpeg,image/*" data-action="{% url 'upload-episode-media' %}" data-content-type="image" data-content="Tile Image" class="file-upload custom-file-input">
+                                    <label class="custom-file-label placeholder text-truncate">Tile Image[*]</label>
+                                </div>
+                            </div>
+                            <div class="upload-box  box-image">
+                                <img src="{% static 'images/no-image.svg' %}">
+                            </div>
+                        </div>
+                        <input type="text" class="opacity-0 file-field" name="tile_image_file" required>
+                        <span class="pl-2 text-muted file_name"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="content-block-one p-0">
+                    <h4 class="profile-setup-inner-block-heading">Upload Video</h4>
+                    <div class="form-group form-field-main file-container">
+                        <div class="form-field-video">
+                            <div class="video-uploadbox">
+                                <div class="custom-file">
+                                    <input type="file" accept="video/mp4,video/x-m4v,video/mov,video/avi,video/*" data-duration="true" data-content-type="video" data-action="{% url 'upload-episode-media' %}" data-content="Video" class="file-upload custom-file-input">
+                                    <label class="custom-file-label placeholder text-truncate">Upload Video[*]</label>
+                                </div>
+                            </div>
+                            <div class="upload-box box-video" >
+                                <img src="{% static 'images/videoPreview.png' %}">
+                            </div>
+                        </div>
+                        <input type="text" class="opacity-0 file-field" name="upload_video_file" required>
+                        <span class="pl-2 text-muted file_name"></span>
+                    </div>
+                    <div class="form-group form-field-main file-container">
+                        <div class="form-field-video">
+                            <div class="video-uploadbox">
+                                <div class="custom-file">
+                                    <input type="file" accept="video/mp4,video/x-m4v,video/mov,video/avi,video/*" data-content-type="video" data-action="{% url 'upload-episode-media' %}" data-content="Video Teaser" class="file-upload custom-file-input">
+                                    <label class="custom-file-label placeholder text-truncate">Video Teaser[*]</label>
+                                </div>
+                            </div>
+                            <div class="upload-box box-video" >
+                                <img src="{% static 'images/videoPreview.png' %}">
+                            </div>
+                        </div>
+                        <input type="text" class="opacity-0 file-field" name="video_teaser_file" required>
+                        <span class="pl-2 text-muted file_name"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-page">
+            <div class="row row-pd video-one">
+                <div class="col-sm-6 vdo-6-one">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">About workout or video[*]</label>
+                        <div class="form-field-input textarea-dif-size">
+                            {{form.about_video}}
+                            {{form.about_video.errors}}
+                            <small>0 of 150 words</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 vdo-6-one">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Additonal Info</label>
+                        <div class="form-field-input textarea-dif-size">
+                            {{form.additional_info}}
+                            {{form.additional_info.errors}}
+                            <small>0 of 150 words</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    .limitskill{
+    color:red
+    }
+
+    .price_loc{
+        display: flex;
+        flex-flow: row-reverse;
+    }
+</style>
+
+<div class="loader" id="payloader" style=""><img src="{% static 'images/loading.gif' %}" alt=""></div>
+
+{% include "layout/successerror.html" %}
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.multidatespicker.js' %}"></script>
+<script src="{% static 'js/image_uploader.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.14/js/bootstrap-multiselect.min.js"></script>
+{% include "plugins.html" %}
+<script src="{% static 'js/custom.js' %}"></script>
+{% comment %} Extra plugins {% endcomment %}
+<script type="text/javascript">
+    $(window).on('load', function () {
+        $('#payloader').hide();
+      })
+    $('#save_as_draft').on('click', function(){
+        $('#id_save_as').val('draft');
+        $("#episode_form").submit()
+    })
+    $("#episode_form").validate({
+        submitHandler: function (form) {
+            form.submit();
+        }
+    });
+    $('.discart_changes').on('click', function(){
+        $('form').trigger("reset");
+        setTimeout(function(){
+            location.reload(true)
+        }, 300)
+    })
+
+</script>
+{% endblock content %}

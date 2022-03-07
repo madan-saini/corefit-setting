@@ -1,0 +1,45 @@
+{% load static fetch_user %}
+{% if records %}
+
+<table class="table table-bordered table-stip table-cs table-white">
+    <thead>
+        <tr>
+            <th scope="col" width="20%">User ID</th>
+            <th scope="col" width="20%">First Name</th>
+            <th scope="col" width="20%">Last Name</th>
+            <th scope="col" width="20%">Email Address</th>
+            <th scope="col" width="10%">Country</th>
+            <th scope="col" width="10%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in records%}
+        <tr>
+            <td>{{record.user.id}}</td>
+            <td>{{record.user.first_name}}</td>
+            <td>{{record.user.last_name}}</td>
+            <td>{{record.user.email_address}}</td>
+            <td>{{record.country}} </td>
+            <td class="check-single">
+                <div class="radio-box">
+                    {% if record.user.id in reqListIds%}
+                    <input type="checkbox" disabled checked id="e-option{{record.user.id}}" >
+                        <label for="e-option{{record.user.id}}"  title="Employee already invited"></label>
+                        <div class="check" ></div>
+                    {% else %}
+                        <input type="checkbox" id="e-option{{record.user.id}}" name="selected_record" value="{{record.user.id}}">
+                        <label for="e-option{{record.user.id}}"></label>
+                        <div class="check"></div>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+    $('#btn_section').show();
+</script>
+{% endif%}

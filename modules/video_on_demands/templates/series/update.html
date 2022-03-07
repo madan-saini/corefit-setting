@@ -1,0 +1,266 @@
+{% extends 'layout/inner.html' %}
+{% load static util_filter %}
+{% block content %}
+{% comment %} For Series {% endcomment %}
+<div class="content-page">
+    <form class="series-form" action="" method="POST">
+        {% csrf_token %}
+        {% include 'forms/form_errors.html' %}
+        {% profile_image object as profileimg %}
+        {% tile_image object as tileimg %}
+        {% uploaded_teaser object as uploadteaser %}
+
+        <div class="page-head-one">
+            <h2>View and Update Video Series</h2>
+            <div class="btn-btm-group top-page-btn">
+                <button type="button" class="border-btn discart_changes">Discard Changes</button>
+                <button type="submit" class="btn-pink ml-10 change-btn">Update</button>
+            </div>
+        </div>
+        <div class="form-page">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Video Series Name[*]</label>
+                        <div class="form-field-input">
+                            {{form.name}}
+                            {{form.name.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Language[*]</label>
+                        <div class="drop-down">
+                            {{form.language}}
+                            {{form.language.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">Applicable Subscription[*]</label>
+                        <div class="drop-down">
+                            {{form.subscription}}
+                            {{form.subscription.errors}}
+                            <a href="{% url 'video_subscription_add' %}" class="small">Add New Subscription [+]</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--video-series  -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="content-block-one">
+                    <h4 class="profile-setup-inner-block-heading">Upload Media</h4>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group form-field-main p-form-3 file-container">
+                                <div class="form-field-video ">
+                                    <div class="video-uploadbox">
+                                        <div class="custom-file">
+                                            <input type="file" accept="image/png,image/jpeg,image/*" data-action="{% url 'upload-new-video' %}" 
+                                            data-content-type="image" data-content="Profile Image" class="file-upload custom-file-input">
+                                            <label class="custom-file-label placeholder text-truncate">Profile image[*]</label>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box box-image">
+                                        <img src="{{ profileimg.get_image }}">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="profile_image_file" class="file-field opacity-0" value="{{ profileimg.id }}">
+                                <span class="pl-2 text-muted file_name">{{profileimg.get_filename}}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-field-main p-form-3 file-container">
+                                <div class="form-field-video ">
+                                    <div class="video-uploadbox">
+                                        <div class="custom-file">
+                                            <input type="file" accept="image/png,image/jpeg,image/*" data-action="{% url 'upload-new-video' %}" data-content-type="image" data-content="Tile Image" class="file-upload custom-file-input">
+                                            <label class="custom-file-label placeholder text-truncate">Tile Image[*]</label>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box box-image">
+                                        <img src="{{ tileimg.get_image }}">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="tile_image_file" class="file-field opacity-0" value="{{tileimg.id}}">
+                                <span class="pl-2 text-muted file_name">{{tileimg.get_filename}}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group form-field-main p-form-3 file-container">
+                                <div class="form-field-video">
+                                    <div class="video-uploadbox">
+                                        <div class="custom-file">
+                                            <input type="file" accept="video/mp4,video/x-m4v,video/mov,video/avi,video/*" data-content-type="video" data-action="{% url 'upload-new-video' %}" data-content="Video Teaser" class="file-upload custom-file-input">
+                                            <label class="custom-file-label placeholder text-truncate">Video Teaser[*]</label>
+                                        </div>
+                                    </div>
+                                    <div class="upload-box box-video" >
+                                        <img src="{{ uploadteaser.get_thumbnail }}">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="video_teaser_file" class="file-field opacity-0" value="{{ uploadteaser.id }}">
+                                <span class="pl-2 text-muted file_name">{{ uploadteaser.get_filename }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-page">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group form-field-main">
+                        <label class="label-field">About the video series[*]</label>
+                        <div class="form-field-input textarea-dif-size">
+                            {{form.about_video}}
+                            {{form.about_video.errors}}
+                            <small>0 of 150 words</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="content-block-one">
+                <div class="profile-setup-inner-block-heading d-flex justify-content-between">
+                    <h4 class="">All Episodes</h4>
+                    <a href="{% url 'new_series_add' %}" class="btn-pink ml-10 change-btn">Add another video series</a>
+                </div>
+                {% comment %} List of episodes {% endcomment %}
+                {% if episodes %}
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Sr.N</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Media</th>
+                            <th scope="col">Creation Date</th>
+                            <th scope="col">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for exp in episodes %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>{{exp.name|title}}</td>
+                                    <td>
+                                        <div class="file-container">
+                                            <div class="episode-thumb-v1 upload-box box-video" >
+                                                <img src="{{ exp.video.get_thumbnail }}" width="100">
+                                            </div>
+                                            <input type="hidden" class="file-field opacity-0" value="{{ exp.video.id }}">
+                                        </div>
+                                    </td>
+                                    <td>{{exp.created_at}}</td>
+                                    <td>
+                                        <div class="action-box">
+                                            <a href="{% url 'series_episode_update' exp.id %}" class="border-btn-small" title="View and Edit">Edit</a>
+                                            <a data-href="{% url 'series_episode_delete' exp.id %}" href="javascript:void(0)" type="button" class="btn-red-one delete-episode">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                      </table>
+
+                    {% else %}
+                    <div class="row video-thumb-main mb-3">
+                        <div class="col-sm-12">
+                            <div class="card-body d-flex justify-content-center align-items-center">
+                                <h6 class="card-title">No episodes are added in this series.</h6>
+                                <a href="{% url 'series_episodes_add' object.id %}" class="btn btn-default mb-2">Add episodes</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    .limitskill{
+    color:red
+    }
+
+    .price_loc{
+        display: flex;
+        flex-flow: row-reverse;
+    }
+</style>
+
+<div class="loader" id="payloader" style=""><img src="{% static 'images/loading.gif' %}" alt=""></div>
+
+{% include "layout/successerror.html" %}
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.multidatespicker.js' %}"></script>
+<script src="{% static 'js/image_uploader.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.14/js/bootstrap-multiselect.min.js"></script>
+{% include "plugins.html" %}
+<script src="{% static 'js/custom.js' %}"></script>
+{% comment %} Extra plugins {% endcomment %}
+<script type="text/javascript">
+    
+    $(window).on('load', function () {
+        $('#payloader').hide();
+      })
+    
+      $(document).ready(function() {
+        
+        $(".series-form").validate({
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+
+        $('.delete-episode').on('click', function(){
+            var urlpath = $(this).attr('data-href');
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this media file!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+              })
+              .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "GET",
+                        url: urlpath,
+                        beforeSend: function (xhr) {
+                          $("#payloader").show();
+                        },
+                        success: function (response) {
+                            console.log(response)
+                            location.reload(true);
+                            $("#payloader").hide();
+                        },
+                        error: function (response) {
+                          $("#payloader").hide();
+                        },
+                      });
+                }
+              });
+        })
+        $('.discart_changes').on('click', function(){
+            $('form').trigger("reset");
+            setTimeout(function(){
+                location.reload(true)
+            }, 300)
+        })
+    });
+
+</script>
+{% endblock content %}

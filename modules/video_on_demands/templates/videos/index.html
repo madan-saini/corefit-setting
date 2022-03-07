@@ -1,0 +1,66 @@
+{% extends 'layout/inner.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="content-page">
+    <div class="page-head-one">
+        <h2>Welcome to CoreFit Video On Demand</h2>
+    </div>
+    <div class="pro-set-top-bar"><span>Add CoreFit Video On Demand</span>
+        <div class="btn-group"><a href="{% url 'video_series_add' %}" class="btn-gray-one">Add Video and Series</a></div>
+    </div>
+    <div class="row video-thumb-main">
+        {% for exp in examples %}
+            <div class="col-sm-4">
+                <div class="video-into-thumb">
+                    <div class="v-thumb-img">
+                        <video
+                            class="video-js vjs-theme-forest auto-vid"
+                            width="314px" 
+                            height="252px"
+                            controls
+                            aspectRatio=""
+                            preload="auto"
+                            poster="{{ exp.get_thumbnail }}"
+                            data-setup="{}">
+                            <source src="{{ exp.media_file.url }}" type="video/mp4" />
+                         </video>
+                    </div>
+                    <div class="vdo-thumb-content">
+                        <p>{{exp.about_video|safe}}</p>
+                        <div class="v-intro-text">
+                        <h6>Let’s get started!</h6>
+                        <a href="{% url 'video_series_add' %}" class="btn-green-border">Add a new video</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<style>
+    .limitskill{
+    color:red
+    }
+
+</style>
+
+<div class="loader" id="payloader" style=""><img src="{% static 'images/loading.gif' %}" alt=""></div>
+
+{% include "layout/successerror.html" %}
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.multidatespicker.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+{% include "plugins.html" %}
+<script>
+    $(window).on('load', function () {
+        $('#payloader').hide();
+      })
+</script>
+{% endblock content %}

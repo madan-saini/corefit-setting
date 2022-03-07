@@ -1,0 +1,109 @@
+{% extends 'layout/inner.html' %}
+{% load static fetch_user djmoney  %}
+{% block content %}
+<div class="content-page">
+    <div class="page-head-one ">
+        <h2>Video Subscription List</h2>
+    </div>
+    <div class="pro-set-top-bar"><span>Add Video Subscription</span>
+        <div class="btn-group"><a href="{% url 'video_subscription_add' %}" class="btn-gray-one">Add Subscription</a></div>
+    </div>
+    <div class="sort-table-block">
+        <div class="search-table d-flex">
+            <div class="search-box-table">
+                <input type="text" name="" placeholder="Search...">
+                <img src="/static/images/search-icon.svg">
+            </div>
+            {% comment %} <div class="search-actions-rt">
+                <a href="#" class="btn-green-border"><img src="/static/images/filter.svg">Filters</a>
+               
+            </div> {% endcomment %}
+        </div>
+        <div class="table-box table-full">
+            <table class="table table-bordered table-stip table-cs">
+                <thead>
+                    <tr>
+                        {% include 'tables/sorted_column.html' %}
+                        <th scope="col">Subscription Period</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subs in videosubscription_list %}
+                        <tr>
+                            <td>{{subs.name}}</td>
+                            {% comment %} <td>{% money_localize subs.price %}</td> {% endcomment %}
+                            <td>{{subs.price.amount }}</td>
+                            <td>{{subs.created_at}}</td>
+                            <td>{{subs.period_value}} {{subs.period}} </td>
+                            <td>
+                                <div class="action-box">
+                                    <a href="{% url 'video_subscription_update' subs.id %}" class="border-btn-small">Edit</a>
+                                    <a href="javascript:void(0)" data-href="{% url 'video_subscription_delete' subs.id %}" class="btn-red-one delete-subs">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'tables/paginations.html' %}
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    .limitskill{
+    color:red
+    }
+
+</style>
+
+<div class="loader" id="payloader" style=""><img src="{% static 'images/loading.gif' %}" alt=""></div>
+
+{% include "layout/successerror.html" %}
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.multidatespicker.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+
+<script>
+    $(window).on('load', function () {
+        $('#payloader').hide();
+    })
+    $('.delete-subs').on('click', function(){
+        var urlpath = $(this).attr('data-href');
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this media file!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          })
+          .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    type: "GET",
+                    url: urlpath,
+                    beforeSend: function (xhr) {
+                      $("#payloader").show();
+                    },
+                    success: function (response) {
+                        $("#payloader").hide();
+                        if(response.success){
+                            location.reload(true);
+                        }
+                        else{
+                            swal('Warning !',response.errors, 'warning')
+                        }
+                    },
+                    error: function (response) {
+                      $("#payloader").hide();
+                    },
+                  });
+            }
+          });
+    })
+</script>
+{% endblock content %}

@@ -1,0 +1,56 @@
+{% load static fetch_user %}
+{% if records %}
+<table class="table table-bordered table-stip table-cs">
+    <thead>
+        <tr>
+            <th scope="col" width="16.66%">User ID <img src="{% static 'images/sort-arrow.svg' %}" style="margin-left: 5px;"></th>
+            <th scope="col" width="16.66%">PT Name</th>
+            <th scope="col" width="16.66%">Email</th>
+            <th scope="col" width="16.66%">Request <br> Type</th>
+            <th scope="col" width="16.66%">Request <br> Status</th>
+            <th scope="col" width="16.66%">Request <br> Date</th>
+            <th scope="col" width="16.66%">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in records%} 
+        <tr>
+            <td>{{record.freelancer_user.id}}</td>
+            <td>{{record.freelancer_user.first_name}} {{record.freelancer_user.last_name}}</td>
+            <td>{{record.freelancer_user.email_address}}</td>
+            <td>{{record.type}}</td>
+            <td>
+                {% if record.status == 2%} 
+                    <span class='ref-btn'>Rejected</span>
+                {% elif record.status == 1%} 
+                    <span class='coll-btn'>Approved</span>
+                {% elif record.status == 3%} 
+                    <span class='can-btn'>Cancelled</span>
+                {%else%} 
+                    <span class='pen-btn'>Pending</span>
+                {%endif%}
+            </td>
+            <td>
+                {{record.created_at|date:"d M Y"}}</td>
+            <td>
+                <div class="action-box">
+                    <a href="javascript:void();" onclick="viewPopup('{{record.id}}');" class="border-btn-small">View</a>
+                    <div class="dropdown drop-more ml-3">
+                        <button class="more-btn dropdown-toggle ml-0" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            More
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="javascript:void();">Message</a>
+                            {% if record.status == 0%}
+                            <a class="dropdown-item" href="javascript:void();" onclick="requestStatus('{{record.id}}','Accept','{{record.type}}')">Accept</a>
+                            <a class="dropdown-item" href="javascript:void();" onclick="requestStatus('{{record.id}}','Reject','{{record.type}}')">Reject</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif%}

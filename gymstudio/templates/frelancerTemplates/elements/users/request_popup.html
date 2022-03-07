@@ -1,0 +1,75 @@
+{% load static %}
+{% load fetch_user %} 
+<div class="modal modal-top fade calendar-modal" id="view-request" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered new-offer-dialog" role="document">
+        <form class="" name='editEvent' id='editEvent' method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% get_basic_data requestData.gym_user.id as basic_data %}
+            <div class="modal-content upload-img-pop new-offer-pop">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group form-field-main">
+                            <label class="label-field">Name</label>
+                            <div class="form-field-input">                                
+                                <input type="text" name="time_of_booking" value="{{basic_data.brand.brand_name}}" class="required disabledField" autocomplete='off' disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group form-field-main">
+                            <label class="label-field">Location</label>
+                            <div class="form-field-input">           
+                                <input type="text" name="time_of_booking" value="{{basic_data.location}}" class="required disabledField" autocomplete='off' disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group form-field-main">
+                            <label class="label-field">Request Subject</label>
+                            <div class="form-field-input">                                
+                                <input type="text" name="time_of_booking" value="{{requestData.type}}" class="required disabledField" autocomplete='off' disabled>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6">
+                        <div class="form-group form-field-main">
+                            <label class="label-field">Request Status</label>
+                                  
+                                {% if requestData.status == 2%} 
+                                <div class="form-field-input status_dv reject_dv"><span>Rejected</span></div>
+                                {% elif requestData.status == 1%} 
+                                <div class="form-field-input status_dv accept_dv"><span>Approved</span></div>
+                                {%else%} 
+                                <div class="form-field-input status_dv pending_dv"><span>Pending</span></div>
+                                {%endif%}
+                            
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group form-field-main">
+                            <label class="label-field">Request Date</label>
+                            <div class="form-field-input">   
+                                {% convert_date requestData.created_at as date_val %}
+                
+                                <input type="text" name="time_of_booking" value="{{date_val}}" class="required disabledField" autocomplete='off' disabled>
+                            </div>
+                        </div>
+                    </div>
+                    {% if requestData.status == 0%}
+                    <div class="col-sm-12">
+                        <div class="btn-btm-group btn-grp-without-bg">
+                            <button class="border-btn" type="button" onclick="requestStatus('{{requestData.id}}','Reject')">Reject</button>
+                            <button class="btn-pink ml-10" type="button" onclick="requestStatus('{{requestData.id}}','Accept')">Accept</button>
+                            
+                        </div>
+                    </div>
+                    {% endif%}
+                </div>
+                <button type="button" class="close-btn-pop" data-dismiss="modal"><img src="{% static 'images/material-cancel.svg' %}"></button>
+            </div>
+        </form>
+    </div>
+
+</div>
+

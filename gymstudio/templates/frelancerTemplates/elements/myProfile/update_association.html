@@ -1,0 +1,103 @@
+{% if isRequest != ''%}
+{% load static fetch_user %}
+<div class="row-new">
+    <div class="col-sm-12 pd-3">
+        <div class="form-field-main">
+            <div class="associat-bar">
+                <span>Are you associated with a facility or PT Company?</span>
+                <div class="can-toggle">
+                    <input id="z" class="asoClas" name="chboxSt" type="checkbox" disabled>
+                    <label for="z">
+                        <div class="can-toggle__switch" data-checked="No" data-unchecked="Yes" disabled></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-field-main">
+            <label>Select or Search for Gym Branch or PT Company Name</label>
+
+            <div class="drop-down nohide"  >
+                <select name="" id="gymslect" class='' disabled>
+                    <option value="">Please Select option</option>
+
+                    {% for bran in branc%}
+                    {% change_type_int isRequest.association_id as kk%}
+                    
+                    
+                    <option value="{{bran.branch.id}}"  {% if kk == bran.branch.id %} selected{% endif %}>{{bran.branch.branch_name|capfirst}}
+                    
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="btn-btm-group spece-btwn">
+    <div></div>
+    <div>
+        <button class="btn-pink ml-10" id="sbmbtn" type="submit" onclick="cancelAssociation('{{isRequest.id}}')">Cancel association</button>
+    </div>
+</div>
+{% else %}
+<div class="row-new">
+    <div class="col-sm-12 pd-3">
+        <div class="form-field-main">
+            <div class="associat-bar">
+                <span>Are you associated with a facility or PT Company?</span>
+                <div class="can-toggle" onclick="javascript:associationC(this)">
+                    <input id="z" class="asoClas" name="chboxSt" type="checkbox" checked>
+                    <label for="z">
+                        <div class="can-toggle__switch" data-checked="No" data-unchecked="Yes"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-field-main">
+            <label>Select or Search for Gym Branch or PT Company Name</label>
+
+            <div class="drop-down nohide"  >
+                <select name="" id="gymslect" class=''>
+                    <option value="">Please Select option</option>
+
+                    {% for bran in branc%}
+                    <option value="{{bran.branch.id}}">{{bran.branch.branch_name|capfirst}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="drop-down yesshow" style="display:none">
+                <select name="gymslect" id="gymslect"  class='selectCls'>
+                    <option value="">Please Select option</option>
+
+                    {% for bran in branc%}
+                    <option value="{{bran.branch.id}}">{{bran.branch.branch_name|capfirst}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="btn-btm-group spece-btwn">
+    <div></div>
+    <div>
+        <button class="border-btn ml-10" onclick="changeType('discard')">Discard changes</button>
+        <button class="btn-pink ml-10" id="sbmbtn" type="submit" onclick="changeType('submit')">Save changes</button>
+    </div>
+</div>
+<script>
+    $('.selectCls').multiselect({
+                                nonSelectedText: "Select from list",
+                                enableFiltering: true,
+                                maxHeight: 250,
+                                numberDisplayed: 1,
+                                enableCaseInsensitiveFiltering: true,
+                                onDropdownShown: function (even) {
+                                    this.$filter.find('.multiselect-search').focus();
+                                }
+                            });
+</script>
+{% endif%}

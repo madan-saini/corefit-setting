@@ -1,0 +1,72 @@
+{% load static %}
+{% load fetch_user %}
+    <div id="train_list" class="col-sm-6">
+        <div class="form-group form-field-main">
+            <label class="label-field  counthead" id="train_head">Training Location[*]</label>
+            <div class="form-field-input input_train">
+                <div class="icon-overlay">
+                    <input type="text" class='' name="tlocation" id="trainlocation2" value="" placeholder="Enter location">
+                    <img src="{% static 'images/LocationArrow.svg' %}">
+                    <a href="javascript:void(0);" onclick="updateDelte()" id="remove_list" class="trash-check-avail delete_lnk" ><img src='/static/images/material-delete.svg'></a>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+<script>
+$(document).ready(function () {
+        var makeids = function (length) {
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+        var rand = makeids(4);
+        $("#train_list").attr('id', 'train_list_' + rand);
+        $("#remove_list").attr('id', 'remove_list_' + rand);
+        $('#remove_list_'+rand).attr("onclick", "updateDelte('" + rand + "')");
+        $("#train_head").attr('id', 'train_head_' + rand);
+        let count = $(".counthead").length
+        $('#train_head_' + rand).html('Training Location '+count)
+        $("#city_section3").attr('id', 'city_section3_' + rand);
+        
+        $("#country_id3").attr('id', 'country_id3_' + rand);
+        $('#country_id3_'+rand).attr("onchange", "updateCity3('" + rand + "',this.value)");
+        $("#train_city_id2").attr('id', 'train_city_id2_' + rand);
+        $("#trainBlocation2").attr('id', 'trainBlocation2_' + rand);
+        $("#trainlocation2").attr('id', 'trainlocation2_' + rand);
+    
+
+
+        $location_input = $("#trainBlocation2_"+rand);
+        var options = {
+        };
+        autocomplete = new google.maps.places.Autocomplete($location_input.get(0), options);
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            return false;
+        });
+        $location_input2 = $("#trainlocation2_"+rand);
+        var options = {
+        };
+        autocomplete2 = new google.maps.places.Autocomplete($location_input2.get(0), options);
+        google.maps.event.addListener(autocomplete2, 'place_changed', function () {
+            return false;
+        });
+    });
+    $(document).ready(function () {
+       
+    });
+    $('.multiple-single').multiselect({
+        nonSelectedText: "Select from list",
+        enableFiltering: true,
+        maxHeight: 250,
+        numberDisplayed: 1,
+        enableCaseInsensitiveFiltering: true,
+        onDropdownShown: function(even) {
+          this.$filter.find('.multiselect-search').focus();
+        }
+    });
+</script>

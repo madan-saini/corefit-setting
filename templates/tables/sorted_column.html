@@ -1,0 +1,11 @@
+{% for sort_link in sort_link_list %}
+    <th scope="col">
+        <a class="text-dark" href="{{ sort_link.path }}">
+            <span class="{{ sort_link.indicator }}">
+                {{sort_link.title}}
+                {% if sort_link.indicator == 'sort-asc' %}▲{% endif %}
+                {% if sort_link.indicator == 'sort-desc' %}▼{% endif %}
+            </span>
+        </a>
+    </th>
+{% endfor %}

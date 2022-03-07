@@ -1,0 +1,28 @@
+
+{% load static %}
+
+    <div class="form-group form-field-main">
+        <label class="label-field">What's Included[*]</label>
+        <div class="drop-down">
+            <select name="what_included_3" class='multiple-checkboxes required' id="what_included_3" multiple="multiple">
+                <!--<option value="">Choose from list</option>-->
+                {% for key, serviceType in includeList %}
+                <option value="{{key}}">{{serviceType}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <script>
+    $('#what_included_3').multiselect({
+        includeSelectAllOption: true,
+        nonSelectedText: "Select Multiple",
+        moveSelectedToTop: true,
+        numberDisplayed: 1,
+        enableFiltering: true,
+        maxHeight: 250,
+        enableCaseInsensitiveFiltering: true,
+        onDropdownShown: function(even) {
+          this.$filter.find('.multiselect-search').focus();
+        }
+    });
+</script>
